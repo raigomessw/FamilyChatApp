@@ -54,6 +54,11 @@ struct SignUpView: View {
                              .strokeBorder(Color(UIColor.separator),style: StrokeStyle(lineWidth: 1.0)))
                  .padding(.bottom, 30)
              
+             if viewModel.isLoading { // Show Loading 
+                 ProgressView()
+                 .padding()
+             }
+             
              Button(action: {
                  viewModel.signUp()
              }, label: {
@@ -64,15 +69,10 @@ struct SignUpView: View {
                      .foregroundColor(Color.white)
                      .cornerRadius(24.0)
              })
-             Divider()
-                 .padding()
              
-             Button(action: {
-                 print("Clikado 2")
-             }, label: {
-                 Text("I have no account!")
-                     .foregroundColor(Color.black)
-             })
+                 .alert(isPresented: $viewModel.formInvalid) {
+                     Alert(title: Text(viewModel.alertText))
+                 }
              
          }
          .frame(maxWidth: .infinity, maxHeight: .infinity)

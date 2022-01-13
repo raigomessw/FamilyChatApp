@@ -46,6 +46,13 @@ struct SignInView: View {
                             .strokeBorder(Color(UIColor.separator),style: StrokeStyle(lineWidth: 1.0)))
                 .padding(.bottom, 30)
             
+            
+            if viewModel.isLoading { // Show Loading
+                ProgressView()
+                .padding()
+            }
+            
+            
             Button(action: {
                 viewModel.signIn()
             }, label: {
@@ -56,6 +63,11 @@ struct SignInView: View {
                     .foregroundColor(Color.white)
                     .cornerRadius(24.0)
             })
+            .alert(isPresented: $viewModel.formInvalid) {
+            Alert(title: Text(viewModel.alertText))
+            }
+            
+            
             Divider()
                 .padding()
             
