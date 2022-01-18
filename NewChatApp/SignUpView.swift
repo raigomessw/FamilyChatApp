@@ -9,18 +9,40 @@ import SwiftUI
 
 struct SignUpView: View {
     @StateObject var viewModel = SignUpViewModel()//State of Obeject help to see the object into the class. All info av logic code stay into class SignViewModel
+    
+    @State var isShowPhotoLibary = false
      
      var body: some View {
          
      
          VStack{
-             Image("logo")
-             .resizable()
-             .frame(width: 150.0, height: 150.0)
-             .scaledToFit()
-             .padding()
-             Text("Family Chat App")
-             .padding()
+             
+             Button(action: {
+                 isShowPhotoLibary = true
+             }, label: {
+                 if viewModel.image.size.width > 0 { // Show Pincture
+                     Image(uiImage: viewModel.image)
+                         .resizable()
+                         .scaledToFill()
+                         .frame(width: 130, height: 130)
+                         .clipShape(Circle())
+                         .overlay(Circle().stroke(Color("GreenColor"),lineWidth: 4))
+                         .shadow(radius: 7)
+                     
+                 } else {
+                 Text("Picture")//Default Picture
+                     .frame(width: 130, height: 130)
+                     .padding()
+                     .background(Color("GreenColor"))
+                     .foregroundColor(Color.white)
+                     .cornerRadius(100.0)
+                   }
+                 })
+                  
+                 .padding(.bottom, 32)
+                 .sheet(isPresented: $isShowPhotoLibary){
+                     ImagePicker(selectedImage: $viewModel.image)
+                 }//Shows another preview layer of the current layer
              
              TextField("Enter with your name:", text: $viewModel.name)
                  .autocapitalization(.none)//Turn off Capslock
