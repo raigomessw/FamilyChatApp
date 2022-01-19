@@ -6,11 +6,29 @@
 //
 
 import Foundation
-import FirebaseAuth
 import UIKit
-import FirebaseStorage
+import Firebase
+/*class FirebaseManager: NSObject {
+    
+    let auth: Auth
+    let storage : Storage
+    let firestore: Firestore
+    
+    static let shared = FirebaseManager()
+    
+    override init() {
+        FirebaseApp.configure()
+        
+        self.auth = Auth.auth()
+        self.storage = Storage.storage()
+        self.firestore = Firestore.firestore()
+        super.init()
+    }
+}*/
 
-class SignUpViewModel: ObservableObject { // For anexera one variabel this class must be Obeservable public
+
+
+class LoginViewModel: ObservableObject { // For anexera one variabel this class must be Obeservable public
     
     var name = ""
     var email = ""
@@ -22,9 +40,8 @@ class SignUpViewModel: ObservableObject { // For anexera one variabel this class
     var alertText = ""
    @Published var isLoading = false // Show loading to user
     
-    func signUp() {
-        print("name: \(name), email: \(email), password: \(password)")
-        
+    
+    func createNewAccount() { //Func create new user
         if (image.size.width <= 0) { //It is one of the mandatory features to create an account "Select Picture"
             formInvalid = true
             alertText = "Select a picture!"
@@ -44,15 +61,13 @@ class SignUpViewModel: ObservableObject { // For anexera one variabel this class
             print("User Criated \(user.uid)")
             
             self.uploadPhoto()
-            
         }
-        
     }
     
     private func uploadPhoto() {
         let filename = UUID().uuidString
         
-        guard let data = image.jpegData(compressionQuality: 0.2) else {return} //Convertera img to data
+        guard let imagedata = image.jpegData(compressionQuality: 0.2) else {return} //Convertera img to data
         
         let newMetadata = StorageMetadata()// Indicates to the metadata what type of form is picture
         newMetadata.contentType = "image/jpeg"
