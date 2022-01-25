@@ -8,20 +8,20 @@
 import SwiftUI
 import SDWebImageSwiftUI
 
-struct ChatUser {
-    let uid, email, profileImageUrl: String
-}
-
 class MainMessagesViewModel: ObservableObject {
     @Published var errorMessage = ""
     @Published var chatUser: ChatUser?
     
     
     init() {
+        DispatchQueue.main.async {
+        self.isUserCurrentlyLoggedOut = true
+        FirebaseManager.shared.auth.currentUser?.uid == nil
+        }
         fetchCurrentUser()
     }
     
-    private func fetchCurrentUser() {
+       func fetchCurrentUser() {
         
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {
             self.errorMessage = "Could not find firebase uid"
@@ -39,14 +39,17 @@ class MainMessagesViewModel: ObservableObject {
             return
                 
             }
+            self.chatUser = .init(data: data)
            
-            //self.errorMessage = "Data: \(data.description)"
-            let uid = data["uid"] as? String ?? ""
-            let email = data["email"] as? String ?? ""
-            let profileImageUrl = data["profileImageUrl"] as? String ?? ""
-            self.chatUser = ChatUser(uid: uid, email: email, profileImageUrl: profileImageUrl)
         }
     }
+    @Published var isUserCurrentlyLoggedOut = false
+    func handleSignOut() {
+        isUserCurrentlyLoggedOut.toggle()// To false
+        try? FirebaseManager.shared.auth.signOut()// Logg out user
+        
+    }
+    
 }
 
 struct MainMessagesView: View {
@@ -110,10 +113,17 @@ struct MainMessagesView: View {
             .init(title: Text("Settings"), message: Text("What do you whant to do?"), buttons: [
                 .destructive(Text("Sign Out"), action: {
                     print("Handle sign out")
+                    vm.handleSignOut()
                 }),
-                //.default(Text("DEFAULT BUTTON")),
                     .cancel()
             ])
+        }
+        .fullScreenCover(isPresented: $vm.isUserCurrentlyLoggedOut, onDismiss: nil) {// Log Out Screen
+            LoginView(didCompleteLoginProcess: {
+                self.vm.isUserCurrentlyLoggedOut = false
+                self.vm.fetchCurrentUser() //Upp user from main
+            })
+            
         }
     }
     private var messagesView: some View {
