@@ -130,9 +130,6 @@ struct LoginView: View {
             
             
         }
-        //.fullScreenCover(isPresented: $MainMessagesView, onDismiss: nil)) {}
-            
-        
     }
     
     private func createNewAccount() { // Func to create acc
