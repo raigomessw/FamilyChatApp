@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5B7406EF279F5E1C00949BC2 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7406EE279F5E1C00949BC2 /* FirebaseManager.swift */; };
+		5B7406F227A0051E00949BC2 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 5B7406F127A0051E00949BC2 /* SDWebImageSwiftUI */; };
 		5B9687442790778300973166 /* FirebaseAnalyticsSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = 5B9687432790778300973166 /* FirebaseAnalyticsSwift-Beta */; };
 		5B9687462790778300973166 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 5B9687452790778300973166 /* FirebaseAuth */; };
 		5B9687482790778300973166 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 5B9687472790778300973166 /* FirebaseDatabase */; };
@@ -70,6 +71,7 @@
 				5B96874A2790778300973166 /* FirebaseFirestore in Frameworks */,
 				5B96874C2790778300973166 /* FirebaseFirestoreSwift-Beta in Frameworks */,
 				5B9687442790778300973166 /* FirebaseAnalyticsSwift-Beta in Frameworks */,
+				5B7406F227A0051E00949BC2 /* SDWebImageSwiftUI in Frameworks */,
 				5B9687462790778300973166 /* FirebaseAuth in Frameworks */,
 				5B9687502790778300973166 /* FirebaseStorageSwift-Beta in Frameworks */,
 				5B96874E2790778300973166 /* FirebaseStorage in Frameworks */,
@@ -185,6 +187,7 @@
 				5B96874B2790778300973166 /* FirebaseFirestoreSwift-Beta */,
 				5B96874D2790778300973166 /* FirebaseStorage */,
 				5B96874F2790778300973166 /* FirebaseStorageSwift-Beta */,
+				5B7406F127A0051E00949BC2 /* SDWebImageSwiftUI */,
 			);
 			productName = NewChatApp;
 			productReference = 5BE7A623278DC03800AC7716 /* NewChatApp.app */;
@@ -260,6 +263,7 @@
 			mainGroup = 5BE7A61A278DC03800AC7716;
 			packageReferences = (
 				5B9687422790778300973166 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				5B7406F027A0051C00949BC2 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
 			);
 			productRefGroup = 5BE7A624278DC03800AC7716 /* Products */;
 			projectDirPath = "";
@@ -637,6 +641,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		5B7406F027A0051C00949BC2 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		5B9687422790778300973166 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -648,6 +660,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		5B7406F127A0051E00949BC2 /* SDWebImageSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5B7406F027A0051C00949BC2 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
+			productName = SDWebImageSwiftUI;
+		};
 		5B9687432790778300973166 /* FirebaseAnalyticsSwift-Beta */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 5B9687422790778300973166 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

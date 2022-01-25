@@ -6,9 +6,17 @@
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
+
+struct ChatUser {
+    let uid, email, profileImageUrl: String
+}
 
 class MainMessagesViewModel: ObservableObject {
     @Published var errorMessage = ""
+    @Published var chatUser: ChatUser?
+    
+    
     init() {
         fetchCurrentUser()
     }
@@ -25,14 +33,18 @@ class MainMessagesViewModel: ObservableObject {
                 self.errorMessage = "Failed to fetch current user: \(error)"
                 return
             }
-            self.errorMessage = "123"
+           
             guard let data = snapshot?.data() else {
             self.errorMessage = "No data found"
             return
                 
             }
            
-            self.errorMessage = "Data: \(data.description)"
+            //self.errorMessage = "Data: \(data.description)"
+            let uid = data["uid"] as? String ?? ""
+            let email = data["email"] as? String ?? ""
+            let profileImageUrl = data["profileImageUrl"] as? String ?? ""
+            self.chatUser = ChatUser(uid: uid, email: email, profileImageUrl: profileImageUrl)
         }
     }
 }
@@ -42,14 +54,38 @@ struct MainMessagesView: View {
     @State var shouldShowLogOutOptions = false
     @ObservedObject private var vm = MainMessagesViewModel()
     
-    private var customNavBar: some View {
-        HStack(spacing: 16){
+    var body: some View {
+        NavigationView {//Body view Main Message
+        
+            VStack{
+                //Text("USER : \(vm.chatUser?.uid ?? "")")
+                customNavBar
+                messagesView
+            }
+            .overlay(
+            newMessageButton, alignment: .bottom)
+            .navigationBarHidden(true)
+    
+        }
+    }
+    
+    private var customNavBar: some View { // User info view
+        HStack(spacing: 16) {
             
-            Image(systemName: "person.fill")
-                .font(.system(size: 34, weight: .heavy))
+            WebImage(url: URL(string:
+             vm.chatUser?.profileImageUrl ?? ""))
+            .resizable()
+            .frame(width: 50, height: 50)
+            .clipped()
+            .cornerRadius(50)
+            .overlay(RoundedRectangle(cornerRadius: 44)
+                        .stroke(Color(.label), lineWidth: 1)
+            )
+            .shadow(radius: 5)
             
             VStack(alignment: .leading, spacing: 4){
-            Text("USERNAME")
+                let email = vm.chatUser?.email.replacingOccurrences(of: "@gmail.com", with: "") ?? ""
+                Text(email)
             .font(.system(size: 24, weight: .bold))
             HStack{
                 Circle()
@@ -78,20 +114,6 @@ struct MainMessagesView: View {
                 //.default(Text("DEFAULT BUTTON")),
                     .cancel()
             ])
-        }
-    }
-    var body: some View {
-        NavigationView {
-        
-            VStack{
-                Text("USER ID: \(vm.errorMessage)")
-                customNavBar
-                messagesView
-            }
-            .overlay(
-            newMessageButton, alignment: .bottom)
-            .navigationBarHidden(true)
-            //.navigationTitle("Main Messages View")
         }
     }
     private var messagesView: some View {
