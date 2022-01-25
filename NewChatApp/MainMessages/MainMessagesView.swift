@@ -11,6 +11,7 @@ import SDWebImageSwiftUI
 class MainMessagesViewModel: ObservableObject {
     @Published var errorMessage = ""
     @Published var chatUser: ChatUser?
+    @Published var isUserCurrentlyLoggedOut = false
     
     
     init() {
@@ -43,7 +44,6 @@ class MainMessagesViewModel: ObservableObject {
            
         }
     }
-    @Published var isUserCurrentlyLoggedOut = false
     func handleSignOut() {
         isUserCurrentlyLoggedOut.toggle()// To false
         try? FirebaseManager.shared.auth.signOut()// Logg out user
@@ -156,8 +156,11 @@ struct MainMessagesView: View {
             }.padding(.bottom, 50)
         }
     }
+    
+    @State var shouldShowNewMesssageScreen = false
     private var newMessageButton: some View {
         Button {
+            shouldShowNewMesssageScreen.toggle()
             
         } label: {
             HStack{
@@ -172,6 +175,10 @@ struct MainMessagesView: View {
             .cornerRadius(32)
             .padding(.horizontal)
             .shadow(radius: 5)
+            
+        }
+        .fullScreenCover(isPresented: $shouldShowNewMesssageScreen) {
+            CreatNewMessageView()
             
         }
     }
