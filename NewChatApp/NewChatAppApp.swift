@@ -16,8 +16,8 @@ struct NewChatAppApp: App {
     
     var body: some Scene {
         WindowGroup {
-            LoginView()
-            //MainMessagesView()
+           //LoginView()
+            MainMessagesView()
         }
     }
 }
