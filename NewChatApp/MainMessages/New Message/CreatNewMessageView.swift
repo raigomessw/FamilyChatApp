@@ -41,9 +41,6 @@ struct CreatNewMessageView: View {
                     .padding(.vertical, 8)
                         
                       }
-                    
-                    }
-                    
             }.navigationTitle("New Message")
                 .toolbar {
                     ToolbarItemGroup(placement: .navigationBarLeading) {
