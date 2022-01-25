@@ -6,21 +6,44 @@
 //
 
 import SwiftUI
-
+import SDWebImageSwiftUI
 
 
 
 struct CreatNewMessageView: View {
     
     @Environment(\.presentationMode) var presentationMode
+    @ObservedObject var vm = CreatNewMessageViewModel()
     
     
     var body: some View {
         NavigationView {
             ScrollView {
-                ForEach(0..<10) { num in
-                    Text("New user")
-                }
+                Text(vm.errorMessage)
+                ForEach(vm.users) { user in
+                    Button {
+                        presentationMode.wrappedValue.dismiss()
+                    } label: {
+                        HStack (spacing: 16){
+                            WebImage(url: URL(string: user.profileImageUrl))
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 55, height: 55)
+                                .clipped()
+                                .cornerRadius(55)
+                                .overlay(RoundedRectangle(cornerRadius: 55).stroke(Color(.label), lineWidth: 2))
+                            Text(user.email)
+                                .foregroundColor(Color(.label))
+                            Spacer()
+                        }.padding(.horizontal)
+                    }
+                    Divider()
+                    .padding(.vertical, 8)
+                        
+                      }
+                    
+                    }
+                    
             }.navigationTitle("New Message")
                 .toolbar {
                     ToolbarItemGroup(placement: .navigationBarLeading) {
@@ -39,7 +62,7 @@ struct CreatNewMessageView: View {
 
 struct CreatNewMessageView_Previews: PreviewProvider {
     static var previews: some View {
-        //CreatNewMessageView()
-        MainMessagesView()
+        CreatNewMessageView()
+        //MainMessagesView()
     }
 }
