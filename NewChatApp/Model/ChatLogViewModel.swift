@@ -11,6 +11,7 @@ import Firebase
 
 
 class ChatLogViewModel: ObservableObject {
+    @Published var count = 0
     
     @Published var chatText = ""
     @Published var errorMessage = ""
@@ -65,6 +66,11 @@ class ChatLogViewModel: ObservableObject {
                         
                     }
                 })
+                
+                DispatchQueue.main.async {
+                self.count += 1 // Make Scroll view down automat when start convesation
+                }
+                
     }
 }
 
@@ -81,6 +87,7 @@ class ChatLogViewModel: ObservableObject {
             .document(fromId)
             .collection(toId)
             .document()
+        
         let messageData = [FirebaseConstants.fromId: fromId, FirebaseConstants.toId: toId, FirebaseConstants.text: self.chatText, "timestamp": Timestamp()] as [String : Any]
         
         document.setData(messageData) { error in
@@ -88,8 +95,9 @@ class ChatLogViewModel: ObservableObject {
                 self.errorMessage = "Failed to save message into Firestore: \(error)"
                 return
             }
-            
+            print("Successfully saved current user sending message")
             self.chatText = "" // Make the text disappear
+            self.count += 1 // Make Scroll view down automat when send message
             
         }
         let recipientMessageDocument =

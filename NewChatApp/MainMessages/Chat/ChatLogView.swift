@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Firebase
 
 
 struct ChatLogView: View { //Struct chat view
@@ -22,58 +23,70 @@ struct ChatLogView: View { //Struct chat view
     var body: some View {
         ZStack {
             messagesView
-            VStack(spacing: 0) {
-                Spacer()
-                chatBottomBar
-                    .background(Color.white.ignoresSafeArea())
-            }
+            Text(vm.errorMessage)
         }
         .navigationTitle(chatUser?.email ?? "")
             .navigationBarTitleDisplayMode(.inline)
+            /*.navigationBarItems(trailing: Button(action: {
+                vm.count += 1
+            }, label: {
+                Text("Count: \(vm.count)")
+            }))*/
     }
+    
+    static let emptyScrollToString = "Empty"
 
     private var messagesView: some View {
         VStack{
             ScrollView {
-                ForEach(vm.chatMessages) {message in
+                ScrollViewReader { scrollViewProxy in
+                    VStack {
+                    ForEach(vm.chatMessages) { message in
                     VStack{
-                        if message.fromId == FirebaseManager.shared.auth.currentUser?.uid {
-                            HStack {
-                                Spacer()
-                                HStack {
-                                    Text(message.text)
-                                        .foregroundColor(.white)
-                                }
-                                .padding()
-                                .background(Color.blue)
-                                .cornerRadius(8)
-                            }
-                            
-                        } else {
-                            HStack {
-                                HStack {
-                                    Text(message.text)
-                                        .foregroundColor(.black)
-                                }
-                                .padding()
-                                .background(Color.white)
-                                .cornerRadius(8)
-                                Spacer()
-                            }
+                    if message.fromId == FirebaseManager.shared.auth.currentUser?.uid {
+                    HStack {
+                      Spacer()
+                      HStack {
+                       Text(message.text)
+                         .foregroundColor(.white)
                         }
+                            .padding()
+                            .background(Color.blue)
+                            .cornerRadius(8)
+                            }
+                                    
+                    } else {
+                    HStack {
+                    HStack {
+                    Text(message.text)
+                    .foregroundColor(.black)
                     }
-                    .padding(.horizontal)
-                    .padding(.top, 8)
+                    .padding()
+                    .background(Color.white)
+                    .cornerRadius(8)
+                    Spacer()
                 }
-
+           }
+      }
+                .padding(.horizontal)
+                .padding(.top, 8)
+                }
                 HStack{ Spacer() }
-                .frame(height: 50)
+                .id(ChatLogView.emptyScrollToString)
+                }
+                .onReceive(vm.$count) { _ in
+                    withAnimation(.easeOut(duration: 0.5)) {
+                        scrollViewProxy.scrollTo(ChatLogView.emptyScrollToString, anchor: .bottom)
+                    }
+                }
+                    
             }
-            .background(Color(.init(white: 0.95, alpha: 1)))
-            .safeAreaInset(edge: .bottom) {
-                chatBottomBar
-                    .background(Color(.systemBackground)
-                                       .ignoresSafeArea())
+        }
+        .background(Color(.init(white: 0.95, alpha: 1)))
+        .safeAreaInset(edge: .bottom) {
+        chatBottomBar
+        .background(Color(.systemBackground)
+        .ignoresSafeArea())
             }
             
         }
