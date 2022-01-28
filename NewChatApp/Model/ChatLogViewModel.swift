@@ -142,7 +142,8 @@ class ChatLogViewModel: ObservableObject {
                 }
             }
 
-           /* guard let currentUser = FirebaseManager.shared.currentUser? else { return }
+        /*guard let currentUser =
+                FirebaseManager.shared.currentUser else {return }
             let recipientRecentMessageDictionary = [
                 FirebaseConstants.timestamp: Timestamp(),
                 FirebaseConstants.text: self.chatText,
