@@ -16,8 +16,8 @@ class MainMessagesViewModel: ObservableObject {
     
     init() {
         DispatchQueue.main.async {
-        self.isUserCurrentlyLoggedOut = true
-        FirebaseManager.shared.auth.currentUser?.uid == nil
+        self.isUserCurrentlyLoggedOut =
+            FirebaseManager.shared.auth.currentUser?.uid == nil
         }
         fetchCurrentUser()
     }
