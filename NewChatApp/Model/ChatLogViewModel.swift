@@ -7,6 +7,7 @@
 
 import Foundation
 import Firebase
+import FirebaseFirestoreSwift
 
 
 
@@ -24,19 +25,10 @@ class ChatLogViewModel: ObservableObject {
         
     }
     
-    struct ChatMessage: Identifiable {
-        
-        var id: String { documentId }
-        
-        let documentId: String
+    struct ChatMessage: Codable, Identifiable {
+        @DocumentID var id: String?
         let fromId, toId, text: String
-        
-        init(documentId: String, data: [String: Any]) {
-            self.documentId = documentId
-            self.fromId = data[FirebaseConstants.fromId] as? String ?? ""
-            self.toId = data[FirebaseConstants.toId] as? String ?? ""
-            self.text = data[FirebaseConstants.text] as? String ?? ""
-        }
+        let timestamp: Date
     }
     
     private func fetchMessages () {
@@ -54,11 +46,16 @@ class ChatLogViewModel: ObservableObject {
                     return
                 }
                 
-                querySnapshot?.documentChanges.forEach({ change in// Fix dubble message
+                querySnapshot?.documentChanges.forEach({ change in //Fix dubble message
                     if change.type == .added {
-                        let data = change.document.data()
-                        self.chatMessages.append(.init(documentId: change.document.documentID, data: data)) // Construction message
-                        
+                        do {
+                            if let cm = try change.document.data(as: ChatMessage.self) {
+                                self.chatMessages.append(cm)
+                                print("Appending chatMessage in ChatLogView: \(Date())")
+                            }
+                        } catch {
+                            print("Failed to decode message: \(error)")
+                        }
                     }
                 })
                 
@@ -84,10 +81,11 @@ class ChatLogViewModel: ObservableObject {
             .collection(toId)
             .document()
         
-        let messageData = [FirebaseConstants.fromId: fromId, FirebaseConstants.toId: toId, FirebaseConstants.text: self.chatText, "timestamp": Timestamp()] as [String : Any]
-        
-        document.setData(messageData) { error in
+        let msg = ChatMessage(id: nil, fromId: fromId, toId: toId, text: chatText, timestamp: Date())
+
+        try? document.setData(from: msg) { error in
             if let error = error {
+                print(error)
                 self.errorMessage = "Failed to save message into Firestore: \(error)"
                 return
             }
@@ -103,7 +101,7 @@ class ChatLogViewModel: ObservableObject {
             .collection(fromId)
             .document()
         
-        recipientMessageDocument.setData(messageData) { error in
+        try? recipientMessageDocument.setData(from: msg) { error in
             if let error = error {
                 self.errorMessage = "Failed to save message into Firestore: \(error)"
                 return

@@ -8,27 +8,7 @@
 import SwiftUI
 import SDWebImageSwiftUI
 import Firebase
-
-struct RecentMessage: Identifiable {
-    
-    var id: String { documentId }
-    
-    let documentId: String
-    let text, email: String
-    let fromId, toId: String
-    let profileImageUrl: String
-    let timestamp: Timestamp
-    
-    init(documentId: String, data: [String: Any]) {
-        self.documentId = documentId
-        self.text = data["text"] as? String ?? ""
-        self.fromId = data["fromId"] as? String ?? ""
-        self.toId = data["toId"] as? String ?? ""
-        self.profileImageUrl = data["profileImageUrl"] as? String ?? ""
-        self.email = data["email"] as? String ?? ""
-        self.timestamp = data["timestamp"] as? Timestamp ?? Timestamp(date: Date())
-    }
-}
+import FirebaseFirestoreSwift
 
 class MainMessagesViewModel: ObservableObject {
     @Published var errorMessage = ""
@@ -48,8 +28,10 @@ class MainMessagesViewModel: ObservableObject {
     
     @Published var recentMessages = [RecentMessage]()
     
-    private func fetchRecentMessages() { // Upp recent messages
+       func fetchRecentMessages() { // Upp recent messages
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
+           
+           self.recentMessages.removeAll()//Romove all message that are obsolete
         
         FirebaseManager.shared.firestore
             .collection("recent_messages")
@@ -66,14 +48,18 @@ class MainMessagesViewModel: ObservableObject {
                     let docId = change.document.documentID
                     
                     if let index = self.recentMessages.firstIndex(where: { rm in
-                        return rm.documentId == docId
+                        return rm.id == docId
                     }) {
                         self.recentMessages.remove(at: index)
                     }
                     
-                    self.recentMessages.insert(.init(documentId: docId, data: change.document.data()), at: 0)
-    
-//                    self.recentMessages.append()
+                    do { // Try decode recent message
+                        if let rm = try change.document.data(as: RecentMessage.self) {
+                        self.recentMessages.insert(rm, at: 0)
+                        }
+                    } catch {
+                        print(error)
+                    }
                 })
             }
     }
@@ -184,6 +170,7 @@ struct MainMessagesView: View {
             LoginView(didCompleteLoginProcess: {
                 self.vm.isUserCurrentlyLoggedOut = false
                 self.vm.fetchCurrentUser() //Upp user from main
+                self.vm.fetchRecentMessages()//Fix the inssue that when conect from another device
             })
             
         }
@@ -209,17 +196,20 @@ struct MainMessagesView: View {
                             
                             
                             VStack(alignment: .leading, spacing: 8){
-                                Text(recentMessage.email)
+                                Text(recentMessage.username)
                             .font(.system(size: 16, weight: .bold))
                             .foregroundColor(Color(.label))
+                            .multilineTextAlignment(.leading)
                                 Text(recentMessage.text)
                             .font(.system(size: 14))
                             .foregroundColor(Color(.darkGray))
+                            .multilineTextAlignment(.leading)
                             }
                             Spacer()
                             
-                            Text("22d")
+                            Text(recentMessage.timeAgo)
                                 .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(Color(.label))
                         }
                     }
                     Divider()
