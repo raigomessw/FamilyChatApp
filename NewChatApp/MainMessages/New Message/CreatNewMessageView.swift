@@ -14,7 +14,7 @@ struct CreatNewMessageView: View {
     let didSelectNewUser: (ChatUser) -> ()// Call back
     
     @Environment(\.presentationMode) var presentationMode
-    @ObservedObject var vm = CreatNewMessageViewModel()
+    @ObservedObject var vm = CreateNewMessageViewModel()
     
     
     var body: some View {

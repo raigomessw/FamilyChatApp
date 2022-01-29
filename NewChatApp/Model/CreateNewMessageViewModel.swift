@@ -7,10 +7,11 @@
 
 import Foundation
 
-class CreatNewMessageViewModel: ObservableObject {
+class CreateNewMessageViewModel: ObservableObject {
     
     @Published var users = [ChatUser]()
     @Published var errorMessage = ""
+    
     init() {
         fetchAllUsers()
     }
@@ -23,14 +24,14 @@ class CreatNewMessageViewModel: ObservableObject {
                     print("Failed to fetch users: \(error)")
                     return
                 }
+                
                 documentsSnapshot?.documents.forEach({ snapshot in
-                    let data = snapshot.data()
-                    let user = ChatUser(data: data)
-                    if user.uid != FirebaseManager.shared.auth.currentUser?.uid{// Take out your self from new menssage
-                    self.users.append(.init(data: data))
+                    let user = try? snapshot.data(as: ChatUser.self)
+                    if user?.uid != FirebaseManager.shared.auth.currentUser?.uid {
+                        self.users.append(user!)
                     }
+                    
                 })
             }
     }
-    
 }

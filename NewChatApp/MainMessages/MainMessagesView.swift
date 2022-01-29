@@ -27,13 +27,15 @@ class MainMessagesViewModel: ObservableObject {
     }
     
     @Published var recentMessages = [RecentMessage]()
+    private var firestoreListener: ListenerRegistration?
     
        func fetchRecentMessages() { // Upp recent messages
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
            
-           self.recentMessages.removeAll()//Romove all message that are obsolete
+           firestoreListener?.remove()
+           self.recentMessages.removeAll()  //Romove all message that are obsolete
         
-        FirebaseManager.shared.firestore
+        firestoreListener = FirebaseManager.shared.firestore
             .collection("recent_messages")
             .document(uid)
             .collection("messages")
@@ -76,13 +78,8 @@ class MainMessagesViewModel: ObservableObject {
                 self.errorMessage = "Failed to fetch current user: \(error)"
                 return
             }
-           
-            guard let data = snapshot?.data() else {
-            self.errorMessage = "No data found"
-            return
-                
-            }
-            self.chatUser = .init(data: data)
+            self.chatUser = try? snapshot?.data(as: ChatUser.self)
+            FirebaseManager.shared.currentUser = self.chatUser
            
         }
     }
@@ -98,8 +95,11 @@ struct MainMessagesView: View {
     
     @State var shouldShowLogOutOptions = false
     
-    @State var shouldNavigationToChatLogView = false
+    @State var shouldNavigateToChatLogView = false
+    
     @ObservedObject private var vm = MainMessagesViewModel()
+    
+    private var chatLogViewModel = ChatLogViewModel(chatUser: nil)
     
     var body: some View {
         NavigationView {//Body view Main Message
@@ -109,8 +109,8 @@ struct MainMessagesView: View {
                 customNavBar
                 messagesView
                 
-                NavigationLink("", isActive: $shouldNavigationToChatLogView) {
-                    ChatLogView(chatUser: self.chatUser) // Call back to chatuser
+                NavigationLink("", isActive: $shouldNavigateToChatLogView) {
+                    ChatLogView(vm: chatLogViewModel)
                 }
             }
             .overlay(
@@ -179,8 +179,12 @@ struct MainMessagesView: View {
         ScrollView {
             ForEach(vm.recentMessages) { recentMessage in
                 VStack {
-                    NavigationLink {
-                        Text("Destination")
+                    Button {
+                        let uid = FirebaseManager.shared.auth.currentUser?.uid == recentMessage.fromId ? recentMessage.toId : recentMessage.fromId
+                        self.chatUser = .init(id: uid, uid: uid, email: recentMessage.email, profileImageUrl: recentMessage.profileImageUrl)
+                        self.chatLogViewModel.chatUser = self.chatUser
+                        self.chatLogViewModel.fetchMessages()
+                        self.shouldNavigateToChatLogView.toggle()
                     } label: {
                         HStack(spacing: 16){
                             WebImage(url: URL(string: recentMessage.profileImageUrl))
@@ -242,8 +246,10 @@ struct MainMessagesView: View {
         .fullScreenCover(isPresented: $shouldShowNewMesssageScreen) {//New screen to new menssage
             CreatNewMessageView(didSelectNewUser: { user in
                 print(user.email)
-                self.shouldNavigationToChatLogView.toggle()// Make that in new message, user klick in a user and take to chat
+                self.shouldNavigateToChatLogView.toggle()// Make that in new message, user klick in a user and take to chat
                 self.chatUser = user
+                self.chatLogViewModel.chatUser = user
+                self.chatLogViewModel.fetchMessages()
             })
             
         }
