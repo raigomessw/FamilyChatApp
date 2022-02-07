@@ -117,6 +117,8 @@ class ChatLogViewModel: ObservableObject {
     
     private func persistRecentMessage() {
             guard let chatUser = chatUser else { return }
+        
+        
 
             guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {
                 return }

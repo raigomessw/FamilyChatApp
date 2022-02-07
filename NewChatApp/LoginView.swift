@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseFirestoreSwift
 
 struct LoginView: View {
     
@@ -18,6 +19,8 @@ struct LoginView: View {
     @State var loginStatusMessage = ""
     @State private var shouldShowImagePicker = false
     @State var image: UIImage?
+    @State var imgData: Data = Data(count: 0)
+ 
     
     var body: some View {
         NavigationView{
@@ -100,7 +103,7 @@ struct LoginView: View {
           }
         .navigationViewStyle(StackNavigationViewStyle())
         .fullScreenCover(isPresented: $shouldShowImagePicker, onDismiss: nil) {
-            ImagePicker(image: $image )
+            ImagePicker(image: $image, imgData: $imgData)
            
         }
         

@@ -10,13 +10,6 @@ import Firebase
 
 
 struct ChatLogView: View { //Struct chat view
-
-  /*  let chatUser: ChatUser?
-    
-    init(chatUser: ChatUser?) {
-        self.chatUser = chatUser
-        self.vm = .init(chatUser: chatUser)
-    }*/
     
     @ObservedObject var vm: ChatLogViewModel
 
@@ -40,9 +33,10 @@ struct ChatLogView: View { //Struct chat view
             ScrollView {
                 ScrollViewReader { scrollViewProxy in
                     VStack {
-                    ForEach(vm.chatMessages) { message in
-                   MessageView(message: message)
-                }
+                        ForEach(vm.chatMessages) { message in
+                        MessageView(message: message)
+                            
+                        }
                 HStack{ Spacer() }
                 .id(ChatLogView.emptyScrollToString)
                 }
@@ -63,12 +57,20 @@ struct ChatLogView: View { //Struct chat view
             
         }
     }
+    @State private var shouldShowImagePicker = false
+    @State var image: UIImage?
+    @State var imgData : Data = Data(count: 0)
 
     private var chatBottomBar: some View {
         HStack(spacing: 16) {
-            Image(systemName: "photo.on.rectangle")
+            
+            Button {
+            shouldShowImagePicker.toggle()
+            } label: {
+            Image(systemName: "paperclip.circle.fill")
                 .font(.system(size: 24))
                 .foregroundColor(Color(.darkGray))
+            }
             ZStack {
                 DescriptionPlaceholder()
                 TextEditor(text: $vm.chatText)
@@ -80,21 +82,33 @@ struct ChatLogView: View { //Struct chat view
                 vm.handleSend()
 
             } label: {
-                Text("Send")
-                    .foregroundColor(.white)
+                Image(systemName: "paperplane.fill")
+                    .font(.system(size: 20))
+                    //Rotating the image
+                    .rotationEffect(.init(degrees: 45))
+                    .padding(.all)
+                    .background(Color.black.opacity(0.07))
+                    .clipShape(Circle())
+                
             }
-            .padding(.horizontal)
-            .padding(.vertical, 8)
-            .background(Color.blue)
-            .cornerRadius(4)
         }
         .padding(.horizontal)
-        .padding(.vertical, 8)
+        .padding(.vertical, 9)
+        .fullScreenCover(isPresented: $shouldShowImagePicker, onDismiss: {
+            if imgData.count != 0 {
+                vm.chatText
+            }
+        }) {
+            ImagePicker(image: $image, imgData: $imgData)
+        }
     }
 }
 
 struct MessageView: View {
     let message: ChatMessage
+    @State var image: UIImage?
+    @State var imgData : Data = Data(count: 0)
+
     
     var body: some View {
         VStack{
@@ -103,7 +117,9 @@ struct MessageView: View {
           Spacer()
           HStack {
            Text(message.text)
-             .foregroundColor(.white)
+            .background(Color.blue)
+            .clipShape(ChatBubble(mymsg: true))
+            .foregroundColor(.white)
             }
                 .padding()
                 .background(Color.blue)
@@ -111,13 +127,15 @@ struct MessageView: View {
                 }
                         
         } else {
-        HStack {
+    HStack {
         HStack {
         Text(message.text)
+        .background(Color.green)
+        .clipShape(ChatBubble(mymsg: true))
         .foregroundColor(.black)
         }
         .padding()
-        .background(Color.white)
+        .background(Color.green)
         .cornerRadius(8)
         Spacer()
     }
@@ -126,12 +144,26 @@ struct MessageView: View {
     .padding(.horizontal)
     .padding(.top, 8)
     }
+ }
+
+struct ChatBubble : Shape {
+    
+   
+    var mymsg : Bool
+    
+    func path(in rect: CGRect) -> Path {
+         
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: [.topLeft,.topRight,mymsg ? .bottomLeft: .bottomRight], cornerRadii: CGSize(width: 10, height: 10))
+        
+        return Path(path.cgPath)
+    }
 }
+
 
 private struct DescriptionPlaceholder: View {
     var body: some View {
         HStack {
-            Text("Description")
+            Text("Message")
                 .foregroundColor(Color(.gray))
                 .font(.system(size: 17))
                 .padding(.leading, 5)
