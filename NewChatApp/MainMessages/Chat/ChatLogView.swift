@@ -48,7 +48,7 @@ struct ChatLogView: View { //Struct chat view
                     
             }
         }
-        .background(Color(.init(white: 0.95, alpha: 1)))
+       
         .safeAreaInset(edge: .bottom) {
         chatBottomBar
         .background(Color(.systemBackground)
@@ -96,7 +96,7 @@ struct ChatLogView: View { //Struct chat view
         .padding(.vertical, 9)
         .fullScreenCover(isPresented: $shouldShowImagePicker, onDismiss: {
             if imgData.count != 0 {
-                vm.chatText
+                ImagePicker(image: $image, imgData: $imgData)
             }
         }) {
             ImagePicker(image: $image, imgData: $imgData)
@@ -144,6 +144,9 @@ struct MessageView: View {
     .padding(.horizontal)
     .padding(.top, 8)
     }
+    
+    
+    
  }
 
 struct ChatBubble : Shape {
