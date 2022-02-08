@@ -17,7 +17,7 @@ struct LoginView: View {
     @State private var email = ""
     @State private var password = ""
     @State var loginStatusMessage = ""
-    @State private var shouldShowImagePicker = false
+    @State private var imagePicker = false
     @State var image: UIImage?
     @State var imgData: Data = Data(count: 0)
  
@@ -43,7 +43,7 @@ struct LoginView: View {
                       
                     if !isLoginMode {// Swith to create ou login
                         Button {
-                            shouldShowImagePicker.toggle()
+                            imagePicker.toggle()
                         } label: {
                             
                             VStack{
@@ -102,8 +102,8 @@ struct LoginView: View {
             .background(Color(.init(white: 0, alpha: 0.05)))
           }
         .navigationViewStyle(StackNavigationViewStyle())
-        .fullScreenCover(isPresented: $shouldShowImagePicker, onDismiss: nil) {
-            ImagePicker(image: $image, imgData: $imgData)
+        .fullScreenCover(isPresented: $imagePicker, onDismiss: nil) {
+            ImagePicker(imagePicker: self.$imagePicker, imgData: self.$imgData)
            
         }
         

@@ -58,7 +58,7 @@ struct ChatLogView: View { //Struct chat view
             
         }
     }
-    @State private var shouldShowImagePicker = false
+    @State private var imagePicker = false
     @State var image: UIImage?
     @State var imgData : Data = Data(count: 0)
 
@@ -66,7 +66,7 @@ struct ChatLogView: View { //Struct chat view
         HStack(spacing: 16) {
             
             Button {
-            shouldShowImagePicker.toggle()
+            imagePicker.toggle()
             } label: {
             Image(systemName: "paperclip.circle.fill")
                 .font(.system(size: 24))
@@ -95,7 +95,7 @@ struct ChatLogView: View { //Struct chat view
         }
         .padding(.horizontal)
         .padding(.vertical, 9)
-        .fullScreenCover(isPresented: $shouldShowImagePicker, onDismiss: {
+        .fullScreenCover(isPresented: self.$imagePicker, onDismiss: {
             if imgData.count != 0 {
                     /*Image(uiImage: image)
                         .resizable()
@@ -104,8 +104,7 @@ struct ChatLogView: View { //Struct chat view
                         .cornerRadius(64)*/
             }
         }) {
-            ImagePicker(image: $image, imgData: $imgData)
-        }
+            ImagePicker(imagePicker: self.$imagePicker, imgData: self.$imgData)
     }
 }
 
@@ -189,6 +188,7 @@ struct ChatLogView_Previews: PreviewProvider {
             //ChatLogView(chatUser: .init(data: ["uid": "3A85OfVrNpVBfj4g1MIer3JgCWj1", "email": "rai@gmail.com"]))
             MainMessagesView()
         }
+      }
        
     }
 }
