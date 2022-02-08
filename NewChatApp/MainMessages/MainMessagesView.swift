@@ -130,7 +130,7 @@ struct MainMessagesView: View {
             .clipped()
             .cornerRadius(50)
             .overlay(RoundedRectangle(cornerRadius: 44)
-                        .stroke(Color(.label), lineWidth: 1)
+            .stroke(Color(.label), lineWidth: 1)
             )
             .shadow(radius: 5)
             

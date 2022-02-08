@@ -12,6 +12,8 @@ import FirebaseFirestoreSwift
 struct ChatMessage: Codable, Identifiable {
     @DocumentID var id: String?
     let fromId, toId, text: String
+    let myMsg: Bool
+    var msgPhoto: Data?
     let timestamp: Date
 }
 
@@ -19,6 +21,7 @@ class ChatLogViewModel: ObservableObject {
     @Published var count = 0
     
     @Published var chatText = ""
+    @Published var msgPhoto : Data = Data(count: 0)
     @Published var errorMessage = ""
     @Published var chatMessages = [ChatMessage]()
     var chatUser: ChatUser?
@@ -86,7 +89,7 @@ class ChatLogViewModel: ObservableObject {
             .collection(toId)
             .document()
         
-        let msg = ChatMessage(id: nil, fromId: fromId, toId: toId, text: chatText, timestamp: Date())
+        let msg = ChatMessage(id: nil, fromId: fromId, toId: toId, text: chatText, myMsg: true, timestamp: Date())
 
         try? document.setData(from: msg) { error in
             if let error = error {

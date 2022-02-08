@@ -7,7 +7,7 @@
 
 import SwiftUI
 import Firebase
-
+import SDWebImageSwiftUI
 
 struct ChatLogView: View { //Struct chat view
     
@@ -19,11 +19,12 @@ struct ChatLogView: View { //Struct chat view
             Text(vm.errorMessage)
         }
         .navigationTitle(vm.chatUser?.email ?? "")
-            .navigationBarTitleDisplayMode(.inline)
-            .onDisappear {
-                vm.firestoreListener?.remove()
-            }
-       }
+        .navigationBarTitleDisplayMode(.inline)
+        .onDisappear {
+        vm.firestoreListener?.remove()
+        }
+           
+    }
     
     static let emptyScrollToString = "Empty"
 
@@ -96,7 +97,11 @@ struct ChatLogView: View { //Struct chat view
         .padding(.vertical, 9)
         .fullScreenCover(isPresented: $shouldShowImagePicker, onDismiss: {
             if imgData.count != 0 {
-                ImagePicker(image: $image, imgData: $imgData)
+                    /*Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 128, height: 128)
+                        .cornerRadius(64)*/
             }
         }) {
             ImagePicker(image: $image, imgData: $imgData)
@@ -108,30 +113,30 @@ struct MessageView: View {
     let message: ChatMessage
     @State var image: UIImage?
     @State var imgData : Data = Data(count: 0)
+    @ObservedObject private var vm = MainMessagesViewModel()
 
     
     var body: some View {
         VStack{
         if message.fromId == FirebaseManager.shared.auth.currentUser?.uid {
-        HStack {
+        HStack(alignment: .top, spacing: 10){
           Spacer()
-          HStack {
+            HStack {
            Text(message.text)
-            .background(Color.blue)
-            .clipShape(ChatBubble(mymsg: true))
+            .clipShape(ChatBubble(myMsg: message.myMsg))
             .foregroundColor(.white)
-            }
-                .padding()
-                .background(Color.blue)
-                .cornerRadius(8)
-                }
-                        
+            } 
+            .padding()
+            .background(Color.blue)
+            .cornerRadius(8)
+          }
         } else {
-    HStack {
+            
+    HStack(alignment: .top, spacing: 10) {
         HStack {
         Text(message.text)
         .background(Color.green)
-        .clipShape(ChatBubble(mymsg: true))
+        .clipShape(ChatBubble(myMsg: message.myMsg))
         .foregroundColor(.black)
         }
         .padding()
@@ -152,11 +157,13 @@ struct MessageView: View {
 struct ChatBubble : Shape {
     
    
-    var mymsg : Bool
+    var myMsg : Bool
     
     func path(in rect: CGRect) -> Path {
          
-        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: [.topLeft,.topRight,mymsg ? .bottomLeft: .bottomRight], cornerRadii: CGSize(width: 10, height: 10))
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: myMsg ?
+        [.topLeft,.bottomLeft,.bottomRight] :
+        [.topRight,.bottomLeft,.bottomRight], cornerRadii: CGSize(width: 10, height: 10))
         
         return Path(path.cgPath)
     }
