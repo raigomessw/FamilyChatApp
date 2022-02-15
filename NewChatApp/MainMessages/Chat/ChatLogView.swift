@@ -12,6 +12,7 @@ import SDWebImageSwiftUI
 struct ChatLogView: View { //Struct chat view
     
     @ObservedObject var vm: ChatLogViewModel
+    
 
     var body: some View {
         ZStack {
@@ -59,8 +60,9 @@ struct ChatLogView: View { //Struct chat view
         }
     }
     @State private var imagePicker = false
-    @State var image: UIImage?
     @State var imgData : Data = Data(count: 0)
+    @State var chatLogViewModel = ChatLogViewModel(chatUser: nil)
+    @State var image : UIImage?
 
     private var chatBottomBar: some View {
         HStack(spacing: 16) {
@@ -96,22 +98,18 @@ struct ChatLogView: View { //Struct chat view
         .padding(.horizontal)
         .padding(.vertical, 9)
         .fullScreenCover(isPresented: self.$imagePicker, onDismiss: {
-            if imgData.count != 0 {
-                    /*Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 128, height: 128)
-                        .cornerRadius(64)*/
+            if self.imgData.count != 0 {
+                vm.handleSend()
+               
             }
         }) {
-            ImagePicker(imagePicker: self.$imagePicker, imgData: self.$imgData)
+            ImagePicker(image: self.$image, imagePicker: self.$imagePicker)
     }
 }
 
 struct MessageView: View {
     let message: ChatMessage
-    @State var image: UIImage?
-    @State var imgData : Data = Data(count: 0)
+    @State var imgData: Data = Data(count: 0)
     @ObservedObject private var vm = MainMessagesViewModel()
 
     
@@ -120,16 +118,24 @@ struct MessageView: View {
         if message.fromId == FirebaseManager.shared.auth.currentUser?.uid {
         HStack(alignment: .top, spacing: 10){
           Spacer()
-            HStack {
-           Text(message.text)
-            .clipShape(ChatBubble(myMsg: message.myMsg))
-            .foregroundColor(.white)
-            } 
-            .padding()
-            .background(Color.blue)
-            .cornerRadius(8)
+            if message.photo == nil {
+                HStack {
+               Text(message.text)
+                .clipShape(ChatBubble(myMsg: message.myMsg))
+                .foregroundColor(.white)
+                }
+                .padding()
+                .background(Color.blue)
+                .cornerRadius(8)
+            } else {
+               /* Image(uiImage: UIImage(data: message.photo!) as! URL)
+                    .resizable()
+                    .frame(width: UIScreen.main.bounds.width - 150, height: 150)
+                    .clipShape(ChatBubble(myMsg: message.myMsg))*/
+            }
           }
         } else {
+            
             
     HStack(alignment: .top, spacing: 10) {
         HStack {

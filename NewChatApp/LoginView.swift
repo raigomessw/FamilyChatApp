@@ -17,7 +17,7 @@ struct LoginView: View {
     @State private var email = ""
     @State private var password = ""
     @State var loginStatusMessage = ""
-    @State private var imagePicker = false
+    @State var imagePicker = false
     @State var image: UIImage?
     @State var imgData: Data = Data(count: 0)
  
@@ -103,7 +103,7 @@ struct LoginView: View {
           }
         .navigationViewStyle(StackNavigationViewStyle())
         .fullScreenCover(isPresented: $imagePicker, onDismiss: nil) {
-            ImagePicker(imagePicker: self.$imagePicker, imgData: self.$imgData)
+            ImagePicker(image: self.$image, imagePicker: self.$imagePicker)
            
         }
         

@@ -13,7 +13,7 @@ struct ChatMessage: Codable, Identifiable {
     @DocumentID var id: String?
     let fromId, toId, text: String
     let myMsg: Bool
-    var msgPhoto: Data?
+    var photo: Data?//
     let timestamp: Date
 }
 
@@ -21,7 +21,7 @@ class ChatLogViewModel: ObservableObject {
     @Published var count = 0
     
     @Published var chatText = ""
-    @Published var msgPhoto : Data = Data(count: 0)
+    @Published var photo: Data?
     @Published var errorMessage = ""
     @Published var chatMessages = [ChatMessage]()
     var chatUser: ChatUser?
@@ -81,6 +81,7 @@ class ChatLogViewModel: ObservableObject {
         
         guard let fromId = FirebaseManager.shared.auth.currentUser?.uid else { return }
         
+        
         guard let toId = chatUser?.uid else { return }
         
         let document =
@@ -101,6 +102,7 @@ class ChatLogViewModel: ObservableObject {
             self.persistRecentMessage()
             self.chatText = "" // Make the text disappear
             self.count += 1 // Make Scroll view down automat when send message
+            
             
         }
         let recipientMessageDocument =
