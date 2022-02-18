@@ -54,6 +54,7 @@ class ChatLogViewModel: ObservableObject {
                     return
                 }
                 
+                
                 querySnapshot?.documentChanges.forEach({ change in //Fix dubble message
                     if change.type == .added {
                         do {

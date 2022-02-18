@@ -119,21 +119,35 @@ struct MainMessagesView: View {
     
         }
     }
+    @State private var imagePicker = false
+    @State var imgData: Data = Data(count: 0)
+    @State var image: UIImage?
     
     private var customNavBar: some View { // User info view
         HStack(spacing: 16) {
             
-            WebImage(url: URL(string:
-             vm.chatUser?.profileImageUrl ?? ""))
-            .resizable()
-            .frame(width: 50, height: 50)
-            .clipped()
-            .cornerRadius(50)
-            .overlay(RoundedRectangle(cornerRadius: 44)
-            .stroke(Color(.label), lineWidth: 1)
-            )
-            .shadow(radius: 5)
-            
+            Button {
+            imagePicker.toggle()
+            } label: {
+              if let image = self.image {// To when selected a picture Upp Picture
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 50, height: 50)
+                                .cornerRadius(64)
+                    } else {
+                        WebImage(url: URL(string:
+                         vm.chatUser?.profileImageUrl ?? ""))
+                        .resizable()
+                        .frame(width: 50, height: 50)
+                        .clipped()
+                        .cornerRadius(50)
+                        .overlay(RoundedRectangle(cornerRadius: 44)
+                        .stroke(Color(.label), lineWidth: 1)
+                        )
+                        .shadow(radius: 5)
+                    }
+            }
             VStack(alignment: .leading, spacing: 4){
                 let email = vm.chatUser?.email.replacingOccurrences(of: "@gmail.com", with: "") ?? ""
                 Text(email)
@@ -156,7 +170,10 @@ struct MainMessagesView: View {
                     .foregroundColor(Color(.label))
             })
         }
-        .padding()
+        .fullScreenCover(isPresented: $imagePicker, onDismiss: nil) {
+            ImagePicker(image: self.$image, imagePicker: self.$imagePicker, imgData: $imgData)
+           
+        }
         .actionSheet(isPresented: $shouldShowLogOutOptions) {
             .init(title: Text("Settings"), message: Text("What do you whant to do?"), buttons: [
                 .destructive(Text("Sign Out"), action: {
@@ -260,7 +277,7 @@ struct MainMessagesView: View {
 struct MainMessagesView_Previews: PreviewProvider {
     static var previews: some View {
         MainMessagesView()
-        .preferredColorScheme(.dark)
+        //.preferredColorScheme(.dark)
        // MainMessagesView()
     }
 }

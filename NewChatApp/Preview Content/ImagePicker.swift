@@ -12,6 +12,7 @@ struct ImagePicker: UIViewControllerRepresentable {
 
     @Binding var image: UIImage?
     @Binding var imagePicker: Bool
+    @Binding var imgData: Data
 
     private let controller = UIImagePickerController()
 

@@ -103,7 +103,7 @@ struct ChatLogView: View { //Struct chat view
                
             }
         }) {
-            ImagePicker(image: self.$image, imagePicker: self.$imagePicker)
+             
     }
 }
 

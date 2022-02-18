@@ -70,6 +70,7 @@ struct LoginView: View {
                     TextField("Email:", text: $email)
                             .keyboardType(.emailAddress)
                             .autocapitalization(.none)//Turn off Capslock
+                            .disableAutocorrection(true)
                         SecureField("Password:", text: $password)
                     }
                     .autocapitalization(.none)//Turn off Capslock
@@ -103,7 +104,7 @@ struct LoginView: View {
           }
         .navigationViewStyle(StackNavigationViewStyle())
         .fullScreenCover(isPresented: $imagePicker, onDismiss: nil) {
-            ImagePicker(image: self.$image, imagePicker: self.$imagePicker)
+            ImagePicker(image: self.$image, imagePicker: self.$imagePicker, imgData: $imgData)
            
         }
         
